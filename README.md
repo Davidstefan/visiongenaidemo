@@ -56,10 +56,6 @@ Create a file called `config.json` in the same folder as `main.py`:
 }
 ```
 
-> ⚠️ **Never commit this file to public repositories.**
-
----
-
 ## ▶️ Run the demo
 
 Open a terminal in the folder and run:
