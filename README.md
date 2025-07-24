@@ -88,14 +88,6 @@ If `python` is not recognized, run it like this:
 
 ---
 
-## 🚧 Known limitations
-
-- Facial expressions may only be recognized if the face is large and well-lit
-- GPT-4o does not always infer emotional states unless prompted clearly
-- Background is intentionally ignored in the prompt unless something unusual occurs
-
----
-
 ## 📜 License
 
 This code is for demonstration and educational purposes.  
