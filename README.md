@@ -1,6 +1,6 @@
 # 📷 AI Vision Demo – GPT-4o + YOLOv8 + Webcam
 
-This demo combines **YOLOv8 object detection** with **Azure OpenAI's GPT-4o (vision model)** to generate real-time natural language descriptions of what your webcam sees. Inspired and recreated from: de Winter, Joost. (2024). Code and explanation for the use of GPT-4o for demonstration purposes. 10.13140/RG.2.2.24898.39364/2. 
+This demo combines **YOLOv8 object detection** with **Azure OpenAI's GPT-4o (vision model)** to generate real-time natural language descriptions of what your webcam sees. Inspired and recreated from: de Winter, Joost. (2024). Code and explanation for the use of GPT-4o for demonstration purposes. http://doi.org/10.13140/RG.2.2.24898.39364/2. 
 
 ---
 
