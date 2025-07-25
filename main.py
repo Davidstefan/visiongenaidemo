@@ -149,16 +149,16 @@ def wrap_text(text, font, scale, thickness, max_width):
 # === Webcam selectie ===
 available_cams = list_available_cameras(5)
 if not available_cams:
-    raise RuntimeError("Geen webcams gevonden.")
-print("Beschikbare webcams:", available_cams)
+    raise RuntimeError("No webcam found.")
+print("Available:", available_cams)
 
-selected_cam = int(input(f"Selecteer een camera (standaard {available_cams[0]}): ") or available_cams[0])
+selected_cam = int(input(f"Select webcam (standard {available_cams[0]}): ") or available_cams[0])
 cap = cv2.VideoCapture(selected_cam)
 if not cap.isOpened():
-    raise RuntimeError(f"Kan webcam {selected_cam} niet openen.")
+    raise RuntimeError(f"Failed to open {selected_cam}.")
 
 # === Window setup ===
-window_name = "AI Vision Demo (Q/C/F = stop/fullscreen)"
+window_name = "AI Vision Demo (C/F = stop/fullscreen)"
 cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
 fullscreen = False
 

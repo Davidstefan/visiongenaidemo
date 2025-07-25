@@ -80,6 +80,7 @@ If `python` is not recognized, run it like this:
   - A summary of detected objects is included in the prompt
   - GPT-4o returns a two-sentence impression in Dutch
 - The output is displayed in the top-right corner of the video
+- If multiple webcams are detected (e.g., laptop + external camera), the script will list all available devices and let you select the desired one.
 - Press `Q` or `C` to stop the demo
 
 ---
