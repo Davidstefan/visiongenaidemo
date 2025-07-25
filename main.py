@@ -34,8 +34,20 @@ last_detection_summary = ""
 gpt_snapshot_frame = None  # Frame dat naar GPT wordt gestuurd
 
 
+# === Camera selectie functies ===
+def list_available_cameras(max_tested=5):
+    """Detecteer beschikbare camera's (indices 0..max_tested)."""
+    available = []
+    for i in range(max_tested):
+        cap = cv2.VideoCapture(i)
+        if cap.isOpened():
+            available.append(i)
+            cap.release()
+    return available
+
+
+# === JSON cleanup helper ===
 def clean_llm_json_response(content):
-    """Extract JSON object from LLM response."""
     try:
         json_str = re.search(r"\{.*\}", content, re.DOTALL).group(0)
         return json.loads(json_str)
@@ -43,8 +55,8 @@ def clean_llm_json_response(content):
         return None
 
 
+# === LLM-query ===
 def query_azure_openai(img_b64):
-    """LLM-call met JSON output."""
     prompt_text = (
         "Beschrijf wat te zien is in exact 20 woorden (kort en nauwkeurig). "
         "Geef daarna trefwoorden voor EMOTIE, SFEER, POSITIEF ELEMENT en NEGATIEF ELEMENT. "
@@ -89,6 +101,7 @@ def query_azure_openai(img_b64):
         return f"[Fout bij Azure GPT-4o]: {e}", "", "", "", ""
 
 
+# === LLM thread ===
 def update_description_every_10s():
     global latest_description, latest_emotie, latest_sfeer, latest_positief, latest_negatief
     global last_frame, gpt_snapshot_frame
@@ -96,10 +109,8 @@ def update_description_every_10s():
     while True:
         if last_frame is not None:
             try:
-                # Neem snapshot voor GPT
                 gpt_snapshot_frame = last_frame.copy()
 
-                # Downsample voor snellere encoding
                 small_frame = cv2.resize(gpt_snapshot_frame, (0, 0), fx=0.5, fy=0.5)
                 img_pil = Image.fromarray(cv2.cvtColor(small_frame, cv2.COLOR_BGR2RGB))
                 buffer = BytesIO()
@@ -117,6 +128,7 @@ def update_description_every_10s():
         time.sleep(10)
 
 
+# === Tekst wrapping helper ===
 def wrap_text(text, font, scale, thickness, max_width):
     words = text.split()
     lines = []
@@ -134,25 +146,31 @@ def wrap_text(text, font, scale, thickness, max_width):
     return lines
 
 
-# Webcam setup
-cap = cv2.VideoCapture(0)
-if not cap.isOpened():
-    raise RuntimeError("Kan webcam niet openen.")
+# === Webcam selectie ===
+available_cams = list_available_cameras(5)
+if not available_cams:
+    raise RuntimeError("Geen webcams gevonden.")
+print("Beschikbare webcams:", available_cams)
 
+selected_cam = int(input(f"Selecteer een camera (standaard {available_cams[0]}): ") or available_cams[0])
+cap = cv2.VideoCapture(selected_cam)
+if not cap.isOpened():
+    raise RuntimeError(f"Kan webcam {selected_cam} niet openen.")
+
+# === Window setup ===
 window_name = "AI Vision Demo (Q/C/F = stop/fullscreen)"
 cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
 fullscreen = False
 
 threading.Thread(target=update_description_every_10s, daemon=True).start()
 
-# Main loop
+# === Main loop ===
 while True:
     ret, frame = cap.read()
     if not ret:
         break
     last_frame = frame.copy()
 
-    # YOLO detection
     results = model(frame, verbose=False)[0]
     boxes = results.boxes.xyxy.cpu().numpy()
     confidences = results.boxes.conf.cpu().numpy()
@@ -204,7 +222,7 @@ while True:
         cv2.putText(frame, line, (x1 + padding, ty), cv2.FONT_HERSHEY_SIMPLEX,
                     font_scale, text_color, 2)
 
-    # Thumbnail van GPT snapshot
+    # Thumbnail GPT snapshot
     if gpt_snapshot_frame is not None:
         thumb = cv2.resize(gpt_snapshot_frame, (150, 150))
         thumb_x, thumb_y = margin, margin
